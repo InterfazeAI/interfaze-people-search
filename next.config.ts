@@ -1,0 +1,12 @@
+import type { NextConfig } from "next";
+
+const config: NextConfig = {
+  output: "export",
+  poweredByHeader: false,
+  devIndicators: false,
+  experimental: {
+    agentUpgrade: "security",
+  },
+};
+
+export default config;
