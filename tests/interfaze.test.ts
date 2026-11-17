@@ -17,6 +17,15 @@ const response = (content: unknown) => ({
 });
 afterEach(() => vi.unstubAllGlobals());
 describe("Interfaze transport", () => {
+  it.each(["", "   ", "bad key", "x".repeat(4097)])(
+    "rejects missing or malformed credentials before making a request (%s)",
+    async (key) => {
+      const fetcher = vi.fn();
+      vi.stubGlobal("fetch", fetcher);
+      await expect(completion({}, key, signal)).rejects.toThrow(/key/i);
+      expect(fetcher).not.toHaveBeenCalled();
+    },
+  );
   it("treats the live provider's no-results response as an empty discovery", async () => {
     vi.stubGlobal(
       "fetch",

@@ -4,6 +4,7 @@ import {
   extractPeople,
   InterfazeError,
   errorMessage,
+  requireApiKey,
 } from "./interfaze";
 import { groundExtraction, mergeExperts } from "./evidence";
 import { selectCandidates, sourceUrl, kindFromUrl } from "./sources";
@@ -15,8 +16,6 @@ import {
   type SourceKind,
 } from "./schema";
 
-import { keylessRemaining } from "./keyless";
-
 // Discovery returns a finite set; read + extract each selected source.
 // No retries: a dropped or cancelled request may already have been billed.
 export async function searchExperts(
@@ -25,6 +24,7 @@ export async function searchExperts(
   signal: AbortSignal,
   publish: (run: SearchRun) => void,
 ) {
+  key = requireApiKey(key);
   if (config.query.trim().length < 8 || config.query.length > MAX_QUERY_LENGTH)
     throw new InterfazeError("Describe a topic in 8–600 characters.");
   if (
@@ -46,12 +46,6 @@ export async function searchExperts(
   )
     throw new InterfazeError(
       "This URL doesn’t match the selected source type. Choose All sources or the matching type.",
-    );
-  const available = key.trim() ? null : keylessRemaining();
-  if (available !== null && available < (directUrl ? 2 : 3))
-    throw new InterfazeError(
-      "Not enough keyless requests remain for this search. Add your API key or wait for the quota reset.",
-      429,
     );
   const stop = new AbortController();
   const combined = AbortSignal.any([signal, stop.signal]);
@@ -79,7 +73,6 @@ export async function searchExperts(
   };
   emit();
   try {
-    const keyless = !key.trim();
     const kinds: SourceKind[] =
       config.scope === "all" ? ["paper", "patent"] : [config.scope];
     const groups = directUrl
@@ -96,12 +89,6 @@ export async function searchExperts(
           const groups: Candidate[][] = [];
           for (const kind of kinds) {
             combined.throwIfAborted();
-            // Preserve enough of a known keyless allowance to read and extract a source.
-            const available = key.trim() ? null : keylessRemaining();
-            if (available !== null && groups.length && available < 3) {
-              // Keep enough requests to read and extract a source.
-              break;
-            }
             groups.push(
               await (async () => {
                 try {
@@ -124,30 +111,11 @@ export async function searchExperts(
           return groups;
         })();
     combined.throwIfAborted();
-    const discovered = selectCandidates(
+    const candidates = selectCandidates(
       groups,
       config.scope,
       config.sourceLimit ?? Infinity,
     );
-    const remaining = keyless ? keylessRemaining() : null;
-    // Spend the available keyless budget on complete source reads + extractions.
-    // Additional contact discovery requires a user's key.
-    const sourceBudget = keyless
-      ? remaining === null
-        ? 1
-        : Math.floor(remaining / 2)
-      : discovered.length;
-    if (keyless && discovered.length && sourceBudget < 1)
-      throw new InterfazeError(
-        "The keyless allowance cannot cover a source read and extraction. Add a key or wait for the reset.",
-        429,
-      );
-    const candidates = discovered.slice(0, sourceBudget);
-    if (keyless)
-      run.keylessPreview = {
-        discoveredSources: discovered.length,
-        selectedSources: candidates.length,
-      };
     run.sources = candidates.map((c) => ({
       ...c,
       status: "queued",
@@ -156,14 +124,8 @@ export async function searchExperts(
     run.phase = "reading";
     emit();
     let cursor = 0;
-    let quotaStopped = false;
     async function worker() {
       while (!combined.aborted && cursor < candidates.length) {
-        const remaining = key.trim() ? null : keylessRemaining();
-        if (remaining !== null && remaining < 2) {
-          quotaStopped = true;
-          break;
-        }
         const index = cursor++;
         const candidate = candidates[index];
         const record = run.sources[index];
@@ -205,20 +167,9 @@ export async function searchExperts(
         emit();
       }
     }
-    await Promise.all(key.trim() ? [worker(), worker()] : [worker()]);
-    if (quotaStopped) {
-      run.warnings.push(
-        "The keyless allowance changed while this search was running. Completed results are kept; add a key or wait for the reset to continue.",
-      );
-      for (const record of run.sources) {
-        if (record.status === "queued") {
-          record.status = "skipped";
-          record.note = "Not read: keyless allowance reached.";
-        }
-      }
-    }
+    await Promise.all([worker(), worker()]);
     combined.throwIfAborted();
-    run.phase = quotaStopped ? "cancelled" : "complete";
+    run.phase = "complete";
   } catch (error) {
     run.phase = fatal ? "error" : signal.aborted ? "cancelled" : "error";
     for (const source of run.sources) {

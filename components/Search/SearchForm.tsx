@@ -1,10 +1,8 @@
 "use client";
-import { useKeylessQuota } from "@/hooks/useKeylessQuota";
 import { useState } from "react";
 import { Button } from "@chakra-ui/react";
 import {
   ArrowRight,
-  ArrowUpRight,
   BookOpen,
   Fingerprint,
   Search,
@@ -55,7 +53,6 @@ export function SearchForm({
   onCancel: () => void;
   onSettings: () => void;
 }) {
-  const quota = useKeylessQuota();
   const [query, setQuery] = useState("");
   const [sourceLimit, setSourceLimit] = useState("");
   const [scope, setScope] = useState<SearchScope>("all");
@@ -67,6 +64,11 @@ export function SearchForm({
         onSubmit={(event) => {
           event.preventDefault();
           if (busy) return;
+          if (!hasKey) {
+            setError("");
+            onSettings();
+            return;
+          }
           if (query.trim().length < 8) {
             setError("Add a little more detail—at least 8 characters.");
             return;
@@ -74,7 +76,6 @@ export function SearchForm({
           setError("");
           const limit = sourceLimit.trim() ? Number(sourceLimit) : undefined;
           if (
-            hasKey &&
             limit !== undefined &&
             (!Number.isSafeInteger(limit) || limit < 1)
           ) {
@@ -86,7 +87,7 @@ export function SearchForm({
           onSearch({
             query: query.trim(),
             scope,
-            ...(hasKey && limit !== undefined ? { sourceLimit: limit } : {}),
+            ...(limit !== undefined ? { sourceLimit: limit } : {}),
           });
         }}
       >
@@ -171,7 +172,7 @@ export function SearchForm({
         <span>Describe a topic or paste a paper URL.</span>
         {hasKey && <span>Your key · all discovered sources by default</span>}
       </div>
-      {hasKey ? (
+      {hasKey && (
         <details className="search-options">
           <summary>Search options</summary>
           <label htmlFor="source-limit">
@@ -193,35 +194,7 @@ export function SearchForm({
             apply.
           </p>
         </details>
-      ) : quota.remaining === 0 ? (
-        <div className="keyless-note" role="status">
-          <div>
-            <span>Keyless allowance used up</span>
-            <p>
-              {quota.resetAt
-                ? `Resets ${new Date(quota.resetAt).toLocaleString()}. `
-                : ""}
-              Add your Interfaze key to keep searching, or wait for the
-              allowance to reset.
-            </p>
-          </div>
-          <div className="keyless-actions">
-            <a
-              className="keyless-signup"
-              href="https://interfaze.ai/auth"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Sign up for Interfaze{" "}
-              <ArrowUpRight size={14} aria-hidden="true" />
-              <span className="sr-only"> (opens in a new tab)</span>
-            </a>
-            <button type="button" onClick={onSettings}>
-              Add a key
-            </button>
-          </div>
-        </div>
-      ) : null}
+      )}
       {showExamples && (
         <div className="examples" aria-label="Suggested searches">
           <span>Try a topic</span>

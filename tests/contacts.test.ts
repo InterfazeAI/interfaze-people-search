@@ -256,6 +256,18 @@ describe("contact validation", () => {
     ).rejects.toThrow(/credits/);
     expect(fetcher).toHaveBeenCalledOnce();
   });
+  it("requires an API key for contact lookup without making requests", async () => {
+    const fetcher = vi.fn();
+    vi.stubGlobal("fetch", fetcher);
+    await expect(
+      findContactLinks(
+        { id: "alice", name: "Alice Jones", affiliation: null, evidence: [] },
+        "",
+        new AbortController().signal,
+      ),
+    ).rejects.toThrow(/API key/);
+    expect(fetcher).not.toHaveBeenCalled();
+  });
   it("does not enrich a same-name profile without matching research context", async () => {
     const answer = (data: unknown) =>
       Response.json({

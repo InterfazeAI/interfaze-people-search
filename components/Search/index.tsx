@@ -80,6 +80,10 @@ export function PeopleSearch() {
           hasKey={!!key.apiKey}
           showExamples={!run}
           onSearch={(config) => {
+            if (!key.apiKey) {
+              setSettings(true);
+              return;
+            }
             contactSearch.reset();
             void search.start(config, key.apiKey);
           }}

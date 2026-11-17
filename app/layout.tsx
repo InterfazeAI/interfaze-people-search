@@ -6,7 +6,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "People Search — Interfaze",
   description:
-    "Find the people behind the work. Discover researchers and inventors through papers and patents, with source evidence you can inspect. Start without a key, or connect your Interfaze account.",
+    "Find the people behind the work. Discover researchers and inventors through papers and patents, with source evidence you can inspect.",
 };
 export default function RootLayout({
   children,

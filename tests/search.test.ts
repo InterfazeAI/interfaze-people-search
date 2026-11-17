@@ -31,6 +31,55 @@ const answer = (data: unknown) =>
   });
 afterEach(() => vi.unstubAllGlobals());
 describe("search lifecycle", () => {
+  it.each(["attention researchers", url])(
+    "requires a valid key before starting discovery or reading (%s)",
+    async (query) => {
+      const fetcher = vi.fn();
+      const publish = vi.fn();
+      vi.stubGlobal("fetch", fetcher);
+      for (const key of ["", "   ", "bad key"]) {
+        await expect(
+          searchExperts(
+            { query, scope: "all" },
+            key,
+            new AbortController().signal,
+            publish,
+          ),
+        ).rejects.toThrow(/key/i);
+      }
+      expect(fetcher).not.toHaveBeenCalled();
+      expect(publish).not.toHaveBeenCalled();
+    },
+  );
+  it.each([undefined, 2])(
+    "reads all discovered sources or the user limit (%s), without a six-source cap",
+    async (sourceLimit) => {
+      const fetcher = vi.fn().mockImplementation(async (_url, options) => {
+        const task = JSON.parse(options.body).messages[0].content;
+        return task === "<task>web_search</task>"
+          ? answer({
+              result: Array.from({ length: 8 }, (_, i) => ({
+                url: `https://arxiv.org/abs/2401.${12340 + i}`,
+                title: `Paper ${i}`,
+              })),
+            })
+          : task === "<task>scraper</task>"
+            ? answer({ result: { text: sourceText } })
+            : answer(extracted);
+      });
+      vi.stubGlobal("fetch", fetcher);
+      const run = await searchExperts(
+        { query: "attention researchers", scope: "paper", sourceLimit },
+        "test-key",
+        new AbortController().signal,
+        () => {},
+      );
+      expect(run.sources).toHaveLength(sourceLimit ?? 8);
+      expect(run.sources.every((s) => s.status === "complete")).toBe(true);
+      expect(run.requests).toBe(1 + 2 * (sourceLimit ?? 8));
+    },
+  );
+
   it("takes real task-shaped responses through discovery, reading, grounding, and export", async () => {
     const fetcher = vi.fn().mockImplementation(async (_url, options) => {
       const body = JSON.parse(options.body);

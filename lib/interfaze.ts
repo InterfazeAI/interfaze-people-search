@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { keylessRemaining, updateKeylessQuota } from "./keyless";
 import { normalizeApiKey } from "./api-key";
 import {
   extractionSchema,
@@ -13,8 +12,6 @@ import { readSourceText } from "./source-text";
 export { readSourceText } from "./source-text";
 
 export const API_ENDPOINT = "https://api.interfaze.ai/v1/chat/completions";
-export const KEYLESS_ENDPOINT =
-  "https://interfaze-7y9k3mak1-jigsaw-stack.vercel.app/v1/chat/completions";
 export const MODEL = "interfaze-1";
 const DEADLINE_MS = 280_000;
 
@@ -51,22 +48,27 @@ export function errorMessage(error: unknown): string {
   return "The connection to Interfaze failed. Check your connection and try again.";
 }
 
+export function requireApiKey(key: string): string {
+  const apiKey = normalizeApiKey(key);
+  if (!apiKey)
+    throw new InterfazeError(
+      key.trim()
+        ? "Check the API key format in Settings."
+        : "Get an Interfaze API key and add it to start searching.",
+      401,
+    );
+  return apiKey;
+}
+
 export async function completion(
   body: Record<string, unknown>,
   key: string,
   signal: AbortSignal,
   extraction = false,
 ): Promise<Completion> {
-  const apiKey = normalizeApiKey(key);
-  if (key.trim() && !apiKey)
-    throw new InterfazeError("Check the API key format in Settings.", 401);
-  if (!apiKey && keylessRemaining() === 0)
-    throw new InterfazeError(
-      "Interfaze’s keyless allowance is exhausted. Wait for the quota reset or add your API key.",
-      429,
-    );
+  const apiKey = requireApiKey(key);
   const timeout = AbortSignal.timeout(DEADLINE_MS);
-  const response = await fetch(apiKey ? API_ENDPOINT : KEYLESS_ENDPOINT, {
+  const response = await fetch(API_ENDPOINT, {
     method: "POST",
     credentials: "omit",
     cache: "no-store",
@@ -75,27 +77,20 @@ export async function completion(
     signal: AbortSignal.any([signal, timeout]),
     headers: {
       "Content-Type": "application/json",
-      ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+      Authorization: `Bearer ${apiKey}`,
       "x-interfaze-zdr": "true",
       ...(extraction ? { "x-interfaze-bypass-moa": "true" } : {}),
     },
     body: JSON.stringify({ model: MODEL, max_tokens: 12000, ...body }),
   });
-  if (!apiKey) updateKeylessQuota(response);
   if (!response.ok) {
     const message =
       response.status === 401 || response.status === 403
-        ? apiKey
-          ? "Interfaze rejected this key. Update it in Settings."
-          : "Interfaze keyless access is unavailable. Try again later or add your API key."
+        ? "Interfaze rejected this key. Update it in Settings."
         : response.status === 402
-          ? apiKey
-            ? "Your Interfaze account needs credits. Add credits, then search again."
-            : "Interfaze keyless access is unavailable. Add your API key to use your account."
+          ? "Your Interfaze account needs credits. Add credits, then search again."
           : response.status === 429
-            ? apiKey
-              ? "Interfaze’s rate limit was reached. Wait before searching again."
-              : "Interfaze’s keyless allowance is exhausted. Wait for the quota reset or add your API key."
+            ? "Interfaze’s rate limit was reached. Wait before searching again."
             : `Interfaze could not finish this request (HTTP ${response.status}). Try again.`;
     // Never surface a provider's raw error body: it may echo inputs or credentials.
     throw new InterfazeError(message, response.status);

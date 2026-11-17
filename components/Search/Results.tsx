@@ -52,14 +52,6 @@ export function Results({
         </div>
       )}
       <p className="results-query">“{run.config.query}”</p>
-      {run.keylessPreview && run.keylessPreview.selectedSources > 0 && (
-        <p className="fine-print">
-          Keyless preview · {run.keylessPreview.selectedSources} selected{" "}
-          {run.keylessPreview.selectedSources === 1 ? "source" : "sources"} with
-          inspectable evidence. Contact links in the source are included when
-          available.
-        </p>
-      )}
       {run.warnings.map((warning, i) => (
         <p className="error-note" role="alert" key={i}>
           {warning}

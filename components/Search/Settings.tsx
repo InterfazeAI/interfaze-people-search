@@ -55,9 +55,8 @@ export function Settings({
         </header>
         <h2 id="settings-title">Connect Interfaze</h2>
         <p className="modal-intro">
-          Search without a key using Interfaze’s keyless allowance. Add your own
-          key for larger searches; your account’s limits and usage charges
-          apply.
+          Add your Interfaze API key to start searching. Need a key? Get one
+          from your Interfaze account.
         </p>
         <form
           onSubmit={(e) => {
@@ -112,7 +111,7 @@ export function Settings({
           </p>
           <a
             className="text-link"
-            href="https://interfaze.ai/dashboard"
+            href="https://interfaze.ai/auth"
             target="_blank"
             rel="noreferrer"
           >
@@ -156,9 +155,8 @@ export function Settings({
         <div className="privacy-note">
           <LockKeyhole size={16} />
           <p>
-            Your key is sent only to api.interfaze.ai. Keyless requests use
-            Interfaze’s public endpoint without credentials. Results stay in
-            this tab.
+            Your key is sent only to api.interfaze.ai. Your account’s limits and
+            usage charges apply. Results stay in this tab.
           </p>
         </div>
       </div>

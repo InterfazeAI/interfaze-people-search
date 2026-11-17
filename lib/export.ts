@@ -8,7 +8,6 @@ export function exportResults(run: SearchRun) {
     scope: run.config.scope,
     searchedAt: run.startedAt,
     status: run.phase,
-    ...(run.keylessPreview ? { keylessPreview: run.keylessPreview } : {}),
     note: "Passages selected directly from source text returned by Interfaze. Relevance and authorship interpretation require source review; affiliations are historical.",
     people: run.experts.map(({ name, affiliation, evidence, contacts }) => ({
       name,

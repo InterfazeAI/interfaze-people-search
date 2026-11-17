@@ -101,10 +101,6 @@ export interface SearchRun {
   sources: SourceRecord[];
   phase: "discovering" | "reading" | "complete" | "cancelled" | "error";
   requests: number;
-  keylessPreview?: {
-    discoveredSources: number;
-    selectedSources: number;
-  };
   warnings: string[];
   startedAt: string;
   finishedAt?: string;

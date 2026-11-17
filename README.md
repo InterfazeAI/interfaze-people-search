@@ -2,7 +2,7 @@
 
 **Find the people behind the work.** Discover researchers and inventors through public papers and patents, with source evidence you can open.
 
-An open-source application with keyless access and optional API keys powered **only by Interfaze’s API**. Built with Next.js, React, TypeScript, and Chakra UI. The typography, theme, and key-management pattern follow Interfaze’s Document Atlas project.
+An open-source application with bring-your-own-key access powered **only by Interfaze’s API**. Built with Next.js, React, TypeScript, and Chakra UI. The typography, theme, and key-management pattern follow Interfaze’s Document Atlas project.
 
 ## Run locally
 
@@ -13,7 +13,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open [http://127.0.0.1:3000](http://127.0.0.1:3000). Search immediately without a key, or choose **Add API key** to use your [Interfaze account](https://interfaze.ai/dashboard). No `.env`, backend, database, or other API account is required.
+Open [http://127.0.0.1:3000](http://127.0.0.1:3000). Choose **Add API key** to connect your [Interfaze account](https://interfaze.ai/auth). Starting a search without a key opens the key dialog; no API request is sent. No `.env`, backend, database, or other API account is required.
 
 1. Describe a topic or research problem, choose a suggested search, or paste a supported public paper/patent URL to inspect that document directly.
 2. Select **All sources**, **Papers**, or **Patents**, then **Find experts**. Cmd/Ctrl + Enter also submits.
@@ -37,14 +37,11 @@ Your question
 ```
 
 - A direct document URL bypasses discovery and uses two calls (read + extract).
-- Optional **Find contact links** uses at most seven additional calls per person: one search, up to three page reads, and up to three structured extractions. It requires the full name and a known paper title or source affiliation on a fetched page; search snippets alone are not accepted. Each lookup has a two-minute overall timeout. Additional contact searches require your own Interfaze key and use your account (with usage charges). Published contact links found during paper/patent extraction remain available in keyless results. Contact-search cancellation and authentication/credit/rate errors stop additional calls. Main-search request counts do not include these optional lookups.
-- Uses model `interfaze-1` for every request. Keyed requests go only to `POST https://api.interfaze.ai/v1/chat/completions`. Keyless requests go to the supplied Interfaze deployment at `POST https://interfaze-7y9k3mak1-jigsaw-stack.vercel.app/v1/chat/completions` without an Authorization header. Keys are never sent to the keyless endpoint; failed keyed requests never silently fall back.
+- Optional **Find contact links** uses at most seven additional calls per person: one search, up to three page reads, and up to three structured extractions. It requires the full name and a known paper title or source affiliation on a fetched page; search snippets alone are not accepted. Each lookup has a two-minute overall timeout. Additional contact searches require your own Interfaze key and use your account (with usage charges). Published contact links found during paper/patent extraction are included in results. Contact-search cancellation and authentication/credit/rate errors stop additional calls. Main-search request counts do not include these optional lookups.
+- Uses model `interfaze-1` for every request. Requests go only to `POST https://api.interfaze.ai/v1/chat/completions` with the user’s API key in the Authorization header. Missing or malformed keys are rejected before making a request. Authentication, credit, and rate-limit errors stop the search without retrying.
 - Discovery and reading use the documented `<task>web_search</task>`, `<task>scraper</task>`, and `<task>ocr</task>` system prompts. Task results are read from `message.content` or `precontext`.
 - Extraction uses a Zod-derived JSON schema and `x-interfaze-bypass-moa: true` so it works only on the supplied source text. No second LLM provider, search API, or embedding service.
-- Keyed searches process all eligible sources returned by discovery by default, with no six-source cap. **Search options → Sources to read** sets an optional positive whole-number limit. Discovery returns a finite result set; this is not exhaustive web crawling or unlimited provider usage. A search uses 1–2 discovery calls plus up to 2 calls per selected source. Up to two keyed sources are processed concurrently; account rate limits and billing still apply.
-- Keyless requests use the endpoint’s `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`, and `Retry-After` headers. The live endpoint reported 10 requests and a reset approximately 24 hours later when checked on November 17, 2026 (Asia/Kolkata); the app does not hard-code this quota or infer its identity scope. Interfaze remains authoritative across tabs and devices. The keyless notice stays hidden during normal use and appears only when the endpoint reports zero requests remaining (including a 429). It offers adding a key and shows the reset time when available; the notice hides again after the reset or when a key is added.
-- Keyless search plans a complete preview before queueing sources. It allocates all remaining requests to source reading and extraction, at two requests per source, with no contact-lookup reserve. Only selected sources enter progress and Search details; completing this smaller scope is a successful search. With a fresh ten-request allowance and enough eligible results, mixed discovery uses two requests and reads four documents (ten requests total); single-type discovery uses one request and reads four documents (nine requests total). The remaining single request cannot complete another document. With no quota headers, the preview conservatively selects one source. Additional contact discovery requires a user-supplied key; contacts present in source documents are still extracted for everyone.
-- A genuinely exhausted or unexpectedly changed allowance still stops requests honestly, retaining completed results. No retries or quota bypasses are performed. Header state is held in memory and refreshed from the next API response after reload. A preview does not guarantee a relevant person or a contact link; sources must still pass evidence validation.
+- Searches process all eligible sources returned by discovery by default, with no six-source cap. **Search options → Sources to read** sets an optional positive whole-number limit. Discovery returns a finite result set; this is not exhaustive web crawling or unlimited provider usage. A search uses 1–2 discovery calls plus up to 2 calls per selected source. Up to two sources are processed concurrently; account rate limits and billing still apply.
 - Source text is capped at 100,000 characters per document; extraction returns at most 10 people per source. Large documents can be only partially inspected.
 - Each API request has a 280-second client timeout. Keep this tab open during a search.
 - Stop cancels active fetches and prevents new calls, retaining completed results. Cancellation does not guarantee cancellation of provider-side processing or billing. There are **no automatic retries**.
@@ -86,10 +83,8 @@ fonts/                        Self-hosted Lora / Geist Mono and their licenses
 theme.ts                      Interfaze design tokens and Chakra recipes
 hooks/useApiKey.ts             Session-only key state
 hooks/useSearch.ts             Search lifecycle, cancellation, stale-run protection
-lib/keyless.ts                 Provider-reported quota state
-hooks/useKeylessQuota.ts       Reactive quota display and reset time
 lib/interfaze.ts               Fixed-endpoint transport and task adapters
-lib/search.ts                 Quota-aware discovery → reading → extraction pipeline
+lib/search.ts                 Discovery → reading → extraction pipeline
 lib/schema.ts                 Shared runtime schemas and types
 lib/evidence.ts               Passage validation and conservative person grouping
 lib/result-groups.ts          Document grouping with source-specific affiliations
@@ -125,9 +120,9 @@ pnpm build
 pnpm start
 ```
 
-For Vercel, import your repository using **Other** as the framework preset. `vercel.json` declares the install/build commands, `out` output directory, and security headers. Use Node 22.x and no environment variables. Visitors can use keyless access or add their own key. The browser requires Interfaze’s CORS support; test it from your deployment origin.
+For Vercel, import your repository using **Other** as the framework preset. `vercel.json` declares the install/build commands, `out` output directory, and security headers. Use Node 22.x and no environment variables. Visitors add their own Interfaze API key. The browser requires Interfaze’s CORS support; test it from your deployment origin.
 
-The production Content Security Policy limits network connections to the app origin, `https://api.interfaze.ai`, and the Interfaze keyless deployment listed above. Self-hosted fonts avoid a third-party font service. Apply the same headers on other hosts. Webpack is used for compatibility with the shared Chakra/Emotion setup.
+The production Content Security Policy limits network connections to the app origin and `https://api.interfaze.ai`. Self-hosted fonts avoid a third-party font service. Apply the same headers on other hosts. Webpack is used for compatibility with the shared Chakra/Emotion setup.
 
 ## MVP scope
 

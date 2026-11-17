@@ -1443,60 +1443,6 @@ main.shell {
   margin-top: 8px;
   max-width: 580px;
 }
-.keyless-note {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 16px;
-  padding: 14px 16px;
-  background: var(--wash);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  font-size: 10px;
-  color: var(--muted);
-}
-.keyless-note p {
-  margin-top: 4px;
-  font-size: 9px;
-}
-.keyless-note button {
-  flex-shrink: 0;
-  border: 0;
-  background: transparent;
-  padding: 6px 0;
-  color: var(--accent);
-}
-.keyless-note button:hover {
-  text-decoration: underline;
-}
-
-.keyless-actions {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px 20px;
-}
-.keyless-signup {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 36px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  background: var(--ink);
-  color: white;
-  transition: background 0.2s;
-}
-.keyless-signup:hover {
-  background: #333338;
-}
-.keyless-signup svg {
-  flex-shrink: 0;
-}
-
 /* Reveal the source beside its evidence, then glide to the literal passage. */
 .evidence-modal {
   overflow: hidden;
