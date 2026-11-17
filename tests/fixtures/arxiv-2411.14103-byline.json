@@ -1,0 +1,160 @@
+{
+  "scraped_content": {
+    "body": [
+      "Lost in Inference: Rediscovering the Role of Natural Language Inference for Large Language Models\nLovish MadaanAffiliation: University College LondonEmail: lovish@meta.comDavid EsiobuEmail: dieuwkehupkes@meta.comPontus StenetorpAffiliation: University College LondonAffiliation: Research and Development Center for LLMs, National Institute of InformaticsBarbara PlankAffiliation: MaiNLP, Center for Information and Language Processing, LMU Munich, GermanyAffiliation: Munich Center for Machine Learning (MCML), Munich, GermanyDieuwke HupkesMeta\nAbstract\nIn the recent past, a popular way of evaluating natural language understanding (NLU), was to consider a model’s ability to perform natural language inference (NLI) tasks.\nIn this paper, we investigate if NLI tasks, that are rarely used for LLM evaluation, can still be informative for evaluating LLMs.\n"
+    ]
+  },
+  "scraped_elements": [
+    {
+      "selector": "div.ltx_authors",
+      "results": [
+        {
+          "html": "<span class=\"ltx_creator ltx_role_author\"><span class=\"ltx_personname\">Lovish Madaan\n</span><span class=\"ltx_author_notes\"><span class=\"ltx_author_notes_content\"><span class=\"ltx_contact ltx_role_affiliation\"><span class=\"ltx_contact_name\">Affiliation: </span>University College London\n</span><span class=\"ltx_contact ltx_role_email\"><span class=\"ltx_contact_name\">Email: </span><a href=\"mailto:\"><span id=\"id1\" class=\"ltx_text ltx_font_typewriter\">lovish@meta.com</span></a></span></span></span></span><span class=\"ltx_creator ltx_role_author\"><span class=\"ltx_personname\">David Esiobu\n</span><span class=\"ltx_author_notes\"><span class=\"ltx_author_notes_content\"><span class=\"ltx_contact ltx_role_email\"><span class=\"ltx_contact_name\">Email: </span><a href=\"mailto:\"><span id=\"id2\" class=\"ltx_text ltx_font_typewriter\">dieuwkehupkes@meta.com</span></a></span></span></span></span><span class=\"ltx_creator ltx_role_author\"><span class=\"ltx_personname\">Pontus Stenetorp\n</span><span class=\"ltx_author_notes\"><span class=\"ltx_author_notes_content\"><span class=\"ltx_contact ltx_role_affiliation\"><span class=\"ltx_contact_name\">Affiliation: </span>University College London\n</span><span class=\"ltx_contact ltx_role_affiliation\"><span class=\"ltx_contact_name\">Affiliation: </span>Research and Development Center for LLMs, National Institute of Informatics\n</span></span></span></span><span class=\"ltx_creator ltx_role_author\"><span class=\"ltx_personname\">Barbara Plank\n</span><span class=\"ltx_author_notes\"><span class=\"ltx_author_notes_content\"><span class=\"ltx_contact ltx_role_affiliation\"><span class=\"ltx_contact_name\">Affiliation: </span>MaiNLP, Center for Information and Language Processing, LMU Munich, Germany\n</span><span class=\"ltx_contact ltx_role_affiliation\"><span class=\"ltx_contact_name\">Affiliation: </span>Munich Center for Machine Learning (MCML), Munich, Germany\n</span></span></span></span><span class=\"ltx_creator ltx_role_author\"><span class=\"ltx_personname\">Dieuwke Hupkes\n</span></span><span class=\"ltx_creator ltx_role_author\"><span class=\"ltx_personname\">Meta\n</span></span>",
+          "text": "Lovish MadaanAffiliation: University College LondonEmail: lovish@meta.comDavid EsiobuEmail: dieuwkehupkes@meta.comPontus StenetorpAffiliation: University College LondonAffiliation: Research and Development Center for LLMs, National Institute of InformaticsBarbara PlankAffiliation: MaiNLP, Center for Information and Language Processing, LMU Munich, GermanyAffiliation: Munich Center for Machine Learning (MCML), Munich, GermanyDieuwke HupkesMeta",
+          "attributes": [
+            {
+              "name": "class",
+              "value": "ltx_authors"
+            }
+          ]
+        }
+      ],
+      "key": "body"
+    },
+    {
+      "selector": "span.ltx_creator.ltx_role_author",
+      "results": [
+        {
+          "html": "<span class=\"ltx_personname\">Lovish Madaan\n</span><span class=\"ltx_author_notes\"><span class=\"ltx_author_notes_content\"><span class=\"ltx_contact ltx_role_affiliation\"><span class=\"ltx_contact_name\">Affiliation: </span>University College London\n</span><span class=\"ltx_contact ltx_role_email\"><span class=\"ltx_contact_name\">Email: </span><a href=\"mailto:\"><span id=\"id1\" class=\"ltx_text ltx_font_typewriter\">lovish@meta.com</span></a></span></span></span>",
+          "text": "Lovish MadaanAffiliation: University College LondonEmail: lovish@meta.com",
+          "attributes": [
+            {
+              "name": "class",
+              "value": "ltx_creator ltx_role_author"
+            }
+          ]
+        },
+        {
+          "html": "<span class=\"ltx_personname\">David Esiobu\n</span><span class=\"ltx_author_notes\"><span class=\"ltx_author_notes_content\"><span class=\"ltx_contact ltx_role_email\"><span class=\"ltx_contact_name\">Email: </span><a href=\"mailto:\"><span id=\"id2\" class=\"ltx_text ltx_font_typewriter\">dieuwkehupkes@meta.com</span></a></span></span></span>",
+          "text": "David EsiobuEmail: dieuwkehupkes@meta.com",
+          "attributes": [
+            {
+              "name": "class",
+              "value": "ltx_creator ltx_role_author"
+            }
+          ]
+        },
+        {
+          "html": "<span class=\"ltx_personname\">Pontus Stenetorp\n</span><span class=\"ltx_author_notes\"><span class=\"ltx_author_notes_content\"><span class=\"ltx_contact ltx_role_affiliation\"><span class=\"ltx_contact_name\">Affiliation: </span>University College London\n</span><span class=\"ltx_contact ltx_role_affiliation\"><span class=\"ltx_contact_name\">Affiliation: </span>Research and Development Center for LLMs, National Institute of Informatics\n</span></span></span>",
+          "text": "Pontus StenetorpAffiliation: University College LondonAffiliation: Research and Development Center for LLMs, National Institute of Informatics",
+          "attributes": [
+            {
+              "name": "class",
+              "value": "ltx_creator ltx_role_author"
+            }
+          ]
+        },
+        {
+          "html": "<span class=\"ltx_personname\">Barbara Plank\n</span><span class=\"ltx_author_notes\"><span class=\"ltx_author_notes_content\"><span class=\"ltx_contact ltx_role_affiliation\"><span class=\"ltx_contact_name\">Affiliation: </span>MaiNLP, Center for Information and Language Processing, LMU Munich, Germany\n</span><span class=\"ltx_contact ltx_role_affiliation\"><span class=\"ltx_contact_name\">Affiliation: </span>Munich Center for Machine Learning (MCML), Munich, Germany\n</span></span></span>",
+          "text": "Barbara PlankAffiliation: MaiNLP, Center for Information and Language Processing, LMU Munich, GermanyAffiliation: Munich Center for Machine Learning (MCML), Munich, Germany",
+          "attributes": [
+            {
+              "name": "class",
+              "value": "ltx_creator ltx_role_author"
+            }
+          ]
+        },
+        {
+          "html": "<span class=\"ltx_personname\">Dieuwke Hupkes\n</span>",
+          "text": "Dieuwke Hupkes",
+          "attributes": [
+            {
+              "name": "class",
+              "value": "ltx_creator ltx_role_author"
+            }
+          ]
+        },
+        {
+          "html": "<span class=\"ltx_personname\">Meta\n</span>",
+          "text": "Meta",
+          "attributes": [
+            {
+              "name": "class",
+              "value": "ltx_creator ltx_role_author"
+            }
+          ]
+        }
+      ],
+      "key": "body"
+    },
+    {
+      "selector": "span.ltx_personname",
+      "results": [
+        {
+          "html": "Lovish Madaan",
+          "text": "Lovish Madaan",
+          "attributes": [
+            {
+              "name": "class",
+              "value": "ltx_personname"
+            }
+          ]
+        },
+        {
+          "html": "David Esiobu",
+          "text": "David Esiobu",
+          "attributes": [
+            {
+              "name": "class",
+              "value": "ltx_personname"
+            }
+          ]
+        },
+        {
+          "html": "Pontus Stenetorp",
+          "text": "Pontus Stenetorp",
+          "attributes": [
+            {
+              "name": "class",
+              "value": "ltx_personname"
+            }
+          ]
+        },
+        {
+          "html": "Barbara Plank",
+          "text": "Barbara Plank",
+          "attributes": [
+            {
+              "name": "class",
+              "value": "ltx_personname"
+            }
+          ]
+        },
+        {
+          "html": "Dieuwke Hupkes",
+          "text": "Dieuwke Hupkes",
+          "attributes": [
+            {
+              "name": "class",
+              "value": "ltx_personname"
+            }
+          ]
+        },
+        {
+          "html": "Meta",
+          "text": "Meta",
+          "attributes": [
+            {
+              "name": "class",
+              "value": "ltx_personname"
+            }
+          ]
+        }
+      ],
+      "key": "body"
+    }
+  ],
+  "meta": {
+    "title": "Lost in Inference: Rediscovering the Role of Natural Language Inference for Large Language Models"
+  }
+}

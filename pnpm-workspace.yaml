@@ -1,0 +1,9 @@
+allowBuilds:
+  esbuild: true
+  sharp: true
+
+storeDir: .pnpm-store
+
+overrides:
+  "serve>compression": 1.8.2
+  "@typescript-eslint/typescript-estree>minimatch": 11.0.1
